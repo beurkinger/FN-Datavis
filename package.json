@@ -1,0 +1,38 @@
+{
+  "name": "fn-datavis",
+  "version": "1.0.0",
+  "description": "A datavisualization about far-right youth groups in France.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beurkinger/FN-Datavis.git"
+  },
+  "keywords": [
+    "data",
+    "vizualisation",
+    "datavizualisation",
+    "far-right",
+    "France"
+  ],
+  "author": "Thibault Goehringer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beurkinger/FN-Datavis/issues"
+  },
+  "homepage": "https://github.com/beurkinger/FN-Datavis#readme",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-latest": "^6.22.0",
+    "html-webpack-plugin": "^2.28.0",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  },
+  "dependencies": {
+    "superagent": "^3.5.0"
+  }
+}
