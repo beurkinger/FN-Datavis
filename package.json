@@ -33,6 +33,7 @@
     "webpack-dev-server": "^2.4.1"
   },
   "dependencies": {
+    "d3": "^4.7.3",
     "superagent": "^3.5.0"
   }
 }
