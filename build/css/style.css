@@ -7,7 +7,46 @@ html, body {
   width: 100%;
 }
 
-#map {
-  max-width: 100%;
-  max-height: 100%;
+body {
+  box-sizing: border-box;
+  padding: 100px;
+}
+
+#fn-app {
+  position: relative;
+  width: 800px; height: 1000px;
+  margin: 0 auto;
+}
+
+#title {
+  font: bold 32px Helvetica, sans-serif;
+  letter-spacing: 0.5px;
+  padding: 40px 0 14px 0;
+}
+
+#subtitle {
+  width: 450px;
+  font: normal 14px Helvetica, sans-serif;
+  padding-bottom: 12px;
+  border-bottom: 1px solid black;
+}
+
+#fn-sum {
+  position: absolute; top: 0; right: 20px;
+  width: 160px; height: 160px;
+  background: lightblue;
+}
+
+#group-name {
+  position: absolute;
+  top: 180px; right: 0;
+  width: 200px; height: 10px;
+  font: bold 14px Helvetica, sans-serif;
+  text-align: center;
+  overflow-x: visible;
+}
+
+#fn-map {
+  width: 100%;
+  height: 100%;
 }
