@@ -38,12 +38,12 @@ svg {
 #fn-group-infos {
   position: absolute; top: 0; right: 0;
   width: 200px;
+  background: lightblue;
 }
 
 #fn-group-sum {
   margin: 0 20px;
   width: 160px; height: 160px;
-  background: lightblue;
 }
 
 #fn-group-name {

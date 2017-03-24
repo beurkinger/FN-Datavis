@@ -1,0 +1,25 @@
+{
+  "name" : "Groupe Union Défense",
+  "sumTwitter" : 1519,
+  "sumFacebook" : 1106,
+  "subgroups" : [
+    {
+      "name" : "Test 1",
+      "twitter" : 1017,
+      "facebook" : 674,
+      "city" : "lille"
+    },
+    {
+      "name" : "Test 2",
+      "twitter" : 178,
+      "facebook" : 108,
+      "city" : "creteil"
+    },
+    {
+      "name" : "Test 2",
+      "twitter" : 324,
+      "facebook" : 118,
+      "city" : "toulouse"
+    }
+  ]
+}
