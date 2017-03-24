@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #06c;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <title>facebook-ball</title>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="titres">
+      <circle class="cls-1" cx="16" cy="16" r="16"/>
+      <path class="cls-2" d="M16,16.41a7.79,7.79,0,1,0,7.79,7.79A7.79,7.79,0,0,0,16,16.41Zm2.37,7.79h-1.5v5.51H14.8V24.21H13.43v-1.9H14.8V21.19c0-1.55.42-2.49,2.24-2.49h1.52v1.9h-1c-.71,0-.74.27-.74.76v1h1.71Z"/>
+    </g>
+  </g>
+</svg>

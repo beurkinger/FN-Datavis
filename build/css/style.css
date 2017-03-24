@@ -12,41 +12,89 @@ body {
   padding: 100px;
 }
 
+svg {
+  display: block;
+}
+
 #fn-app {
   position: relative;
   width: 800px; height: 1000px;
   margin: 0 auto;
 }
 
-#title {
+#fn-title {
   font: bold 32px Helvetica, sans-serif;
   letter-spacing: 0.5px;
   padding: 40px 0 14px 0;
 }
 
-#subtitle {
+#fn-subtitle {
   width: 450px;
   font: normal 14px Helvetica, sans-serif;
   padding-bottom: 12px;
   border-bottom: 1px solid black;
 }
 
-#fn-sum {
-  position: absolute; top: 0; right: 20px;
+#fn-group-infos {
+  position: absolute; top: 0; right: 0;
+  width: 200px;
+}
+
+#fn-group-sum {
+  margin: 0 20px;
   width: 160px; height: 160px;
   background: lightblue;
 }
 
-#group-name {
-  position: absolute;
-  top: 180px; right: 0;
-  width: 200px; height: 10px;
+#fn-group-name {
+  margin-top: 20px;
   font: bold 14px Helvetica, sans-serif;
   text-align: center;
-  overflow-x: visible;
+}
+
+#fn-social-balls {
+  position: absolute;
+  margin-top: 22px;
+}
+
+#fn-social-balls .social-ball {
+  width: 44px;
+  display: inline-block;
+  margin-right: 6px;
+  text-align: center;
+}
+
+#fn-social-balls .social-ball img {
+  display: block;
+  width: 44px; height: 44px;
+}
+
+#fn-social-balls .social-ball input {
+  margin-top: 6px;
+}
+
+#fn-group-list {
+  position: absolute;
+  top: 680px; left: 0;
+  list-style: none;
+  display: inline-block;
+}
+
+#fn-group-list li {
+  font: lighter 12px Helvetica, sans-serif;
+  color : #CCC;
+  letter-spacing: 1px;
+  padding: 10px 10px 5px 0;
+  border-bottom: 1px solid #CCC;
+}
+
+#fn-group-list li:hover, #fn-group-list li.selected {
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+  border-color: #000;
 }
 
 #fn-map {
-  width: 100%;
-  height: 100%;
+  width: 800px; height: 1000px;
 }

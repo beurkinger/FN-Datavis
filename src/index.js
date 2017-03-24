@@ -100,7 +100,7 @@ let data = [
     name : 'Test 1',
     twitter : 1017,
     facebook : 674,
-    city : 'troyes'
+    city : 'lille'
   },
   // {
   //   name : 'Test 2',
