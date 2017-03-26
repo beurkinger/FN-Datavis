@@ -6,9 +6,9 @@ import {geoMercator as d3geoMercator, geoPath as d3geoPath, max as d3max, json a
 // import {select as d3select} from 'd3-selection';
 
 
-const facebookBlue = '#0066CC';
-const twitterBlue = '#0099FF';
-const scaleValue = 16;
+const FACEBOOK_BLUE = '#0066CC';
+const TWITTER_BLUE = '#0099FF';
+const SCALE_VALUE = 16;
 const cityDotRadius = 4;
 
 
@@ -182,7 +182,7 @@ function displayData () {
 
   let scale = d3scaleLinear()
       .domain([0, max])
-      .range([0, svgWidth / scaleValue]);
+      .range([0, svgWidth / SCALE_VALUE]);
 
   dataNode.selectAll('circle')
       .data(data)
@@ -196,8 +196,8 @@ function displayData () {
         let x = xy[0];
         let y = xy[1];
 
-        appendBubble(node, x, y - scaledTwitter, scaledTwitter, twitterBlue);
-        appendBubble(node, x, y - scaledFacebook, scaledFacebook, facebookBlue);
+        appendBubble(node, x, y - scaledTwitter, scaledTwitter, TWITTER_BLUE);
+        appendBubble(node, x, y - scaledFacebook, scaledFacebook, FACEBOOK_BLUE);
         appendBubble(node, x, y, cityDotRadius, '#000');
       });
 }

@@ -6,10 +6,10 @@ import {geoMercator as d3geoMercator, geoPath as d3geoPath, max as d3max, json a
 // import {max as d3max} from 'd3-array';
 // import {scaleLinear as d3scaleLinear} from 'd3-scale';
 // import {select as d3select} from 'd3-selection';
-import {cities, facebookBlue, twitterBlue} from '../constants';
+import {cities, FACEBOOK_BLUE, TWITTER_BLUE} from '../constants';
 
-const scaleValue = 16;
-const cityDotRadius = 4;
+const SCALE_VALUE = 16;
+const cityDotRadius = 2;
 
 class Map extends Component {
 
@@ -24,7 +24,10 @@ class Map extends Component {
     this.projection = null;
     this.mapNode = null;
     this.dataNode = null;
-    
+    this.twitterNode = null;
+    this.facebookNode = null;
+    this.cityNode = null;
+
     this.props = {data : []};
 
     this.displayData = this.displayData.bind(this);
@@ -34,8 +37,11 @@ class Map extends Component {
     this.elt = d3select(document.getElementById('fn-map'));
     this.width = this.elt.node().getBoundingClientRect().width;
     this.height = this.elt.node().getBoundingClientRect().height;
-    this.mapNode = this.elt.append("g");
-    this.dataNode = this.elt.append("g");
+    this.mapNode = this.elt.append('g');
+    this.dataNode = this.elt.append('g');
+    this.twitterNode = this.dataNode.append('g');
+    this.facebookNode = this.dataNode.append('g');
+    this.cityNode = this.dataNode.append('g');
 
     this.getMap(() => {
       this.displayData();
@@ -50,6 +56,7 @@ class Map extends Component {
     d3json("/build/data/departements2.json", (geoJSON) => {
         this.projection = d3geoMercator()
         .fitSize([this.width, this.height], geoJSON);
+
         this.geopath.projection(this.projection);
 
         this.mapNode.selectAll("path")
@@ -76,32 +83,45 @@ class Map extends Component {
 
     let scale = d3scaleLinear()
         .domain([0, max])
-        .range([0, self.width / scaleValue]);
+        .range([0, self.width / SCALE_VALUE]);
 
-    self.dataNode.selectAll('circle')
-        .data(self.props.data)
-      .enter()
-        .append('g').each(function (d, i) {
-          let node = d3select(this);
-          let scaledTwitter = scale(d.twitter);
-          let scaledFacebook = scale(d.facebook);
-
+    let twitterCircles = self.twitterNode.selectAll('circle').data(self.props.data);
+    twitterCircles.enter()
+        .append('circle')
+        .style('fill', TWITTER_BLUE)
+      .merge(twitterCircles).each(function (d, i) {
           let xy = self.projection(cities[d.city]);
-          let x = xy[0];
-          let y = xy[1];
+          let scaledValue = scale(d.twitter);
+          d3select(this)
+            .attr('cx', xy[0])
+            .attr('cy', xy[1] - scaledValue)
+            .attr('r', scaledValue);
+      });
 
-          self.appendBubble(node, x, y - scaledTwitter, scaledTwitter, twitterBlue);
-          self.appendBubble(node, x, y - scaledFacebook, scaledFacebook, facebookBlue);
-          self.appendBubble(node, x, y, cityDotRadius, '#000');
-        });
-  }
+    let facebookCircles = self.facebookNode.selectAll('circle').data(self.props.data);
+    facebookCircles.enter()
+        .append('circle')
+        .style('fill', FACEBOOK_BLUE)
+      .merge(facebookCircles).each(function (d, i) {
+          let xy = self.projection(cities[d.city]);
+          let scaledValue = scale(d.facebook);
+          d3select(this)
+            .attr('cx', xy[0])
+            .attr('cy', xy[1] - scaledValue)
+            .attr('r', scaledValue);
+      });
 
-  appendBubble (node, x, y, r, color) {
-    node.append('circle')
-      .attr('cx', x)
-      .attr('cy', y)
-      .attr('r', r)
-      .style('fill', color);
+    let cityCircles = self.cityNode.selectAll('circle').data(self.props.data);
+    cityCircles.enter()
+        .append('circle')
+        .style('fill', '#000')
+        .attr('r', d => cityDotRadius)
+      .merge(cityCircles).each(function (d, i) {
+        let xy = self.projection(cities[d.city]);
+        d3select(this)
+          .attr('cx', xy[0])
+          .attr('cy', xy[1]);
+      });
   }
 
   render () {

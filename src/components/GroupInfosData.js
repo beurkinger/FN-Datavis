@@ -1,9 +1,11 @@
 import Inferno from 'inferno';
 import Component from 'inferno-component';
 import {max as d3max, scaleLinear as d3scaleLinear, select as d3select} from 'd3';
-import {cities, facebookBlue, twitterBlue} from '../constants';
+import {FACEBOOK_BLUE, TWITTER_BLUE} from '../constants';
 
-const scaleValue = 4;
+const SCALE_VALUE = 2;
+const TWITTER_KEY = 'twitter';
+const FACEBOOK_KEY = 'facebook';
 
 class GroupInfosData extends Component {
 
@@ -25,40 +27,34 @@ class GroupInfosData extends Component {
     this.elt = d3select(document.getElementById('fn-group-sum'));
     this.width = this.elt.node().getBoundingClientRect().width;
     this.height = this.elt.node().getBoundingClientRect().height;
+    this.displayData();
+  }
+
+  componentDidUpdate () {
+    this.displayData();
   }
 
   displayData () {
-    let self = this;
+    let data = [
+      {name : TWITTER_KEY, sum : this.props.sumTwitter},
+      {name : FACEBOOK_KEY, sum : this.props.sumFacebook}
+    ];
 
-    let max = this.sumTwitter > this.sumFacebook ? this.sumTwitter : this.sumFacebook;
+    let max = d3max(data, d => d.sum);
 
     let scale = d3scaleLinear()
         .domain([0, max])
-        .range([0, self.width / scaleValue]);
+        .range([0, this.width / SCALE_VALUE]);
 
-    self.elt.selectAll('circle')
-        .data(self.props.data)
-      .enter()
-        .append('g').each(function (d, i) {
-          let node = d3select(this);
-          let scaledTwitter = scale(d.twitter);
-          let scaledFacebook = scale(d.facebook);
+    let circles = this.elt.selectAll('circle')
+        .data(data);
 
-          let xy = self.projection(cities[d.city]);
-          let x = xy[0];
-          let y = xy[1];
-
-          self.appendBubble(node, x, y - scaledTwitter, scaledTwitter, twitterBlue);
-          self.appendBubble(node, x, y - scaledFacebook, scaledFacebook, facebookBlue);
-        });
-  }
-
-  appendBubble (node, x, y, r, color) {
-    node.append('circle')
-      .attr('cx', x)
-      .attr('cy', y)
-      .attr('r', r)
-      .style('fill', color);
+    circles.enter().append('circle')
+        .attr('cx', this.width/2)
+    .merge(circles)
+        .attr('cy', d => this.height - scale(d.sum))
+        .attr('r', d => scale(d.sum))
+        .style('fill', d => d.name === TWITTER_KEY ? TWITTER_BLUE : FACEBOOK_BLUE);
   }
 
   render () {

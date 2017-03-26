@@ -1,5 +1,5 @@
-export const facebookBlue = '#0066CC';
-export const twitterBlue = '#0099FF';
+export const FACEBOOK_BLUE = '#0066CC';
+export const TWITTER_BLUE = '#0099FF';
 
 export const cities = {
   ajaccio : [8.738634999999931, 41.919229],

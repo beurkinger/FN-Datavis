@@ -9,7 +9,7 @@ html, body {
 
 body {
   box-sizing: border-box;
-  padding: 100px;
+  padding: 25px;
 }
 
 svg {
@@ -38,12 +38,12 @@ svg {
 #fn-group-infos {
   position: absolute; top: 0; right: 0;
   width: 200px;
-  background: lightblue;
+  /*background: lightblue;*/
 }
 
 #fn-group-sum {
-  margin: 0 20px;
-  width: 160px; height: 160px;
+  margin: 0 auto;
+  width: 125px; height: 125px;
 }
 
 #fn-group-name {
