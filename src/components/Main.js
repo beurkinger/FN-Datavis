@@ -17,8 +17,11 @@ class Main extends Component {
       name : "",
       sumTwitter : 0,
       sumFacebook : 0,
-      subgroups : []
+      subgroups : [],
+      onDisplay : { facebook : true, twitter : true }
     };
+
+    this.handleCheck = this.handleCheck.bind(this);
 	}
 
   componentWillMount () {
@@ -32,20 +35,24 @@ class Main extends Component {
     });
   }
 
+  handleCheck (onDisplay) {
+    this.setState({onDisplay : onDisplay});
+  }
+
 	render () {
 		return (
       <div id="fn-app">
         <h1 id="fn-title">
-          Partis jeunesse <br/>
-          d’extrême droite
+          Groupes jeunesse <br/>
+          d’extrême-droite en France
         </h1>
         <h2 id="fn-subtitle">
           Abonnés Twitter et Facebook 2017 des antennes régionales
         </h2>
         <GroupInfos name={this.state.name} sumTwitter={this.state.sumTwitter} sumFacebook={this.state.sumFacebook} />
-        <SocialBalls />
+        <SocialBalls onDisplay={this.state.onDisplay} checkHandler={this.handleCheck} />
         <GroupList />
-        <Map data={this.state.subgroups} />
+        <Map onDisplay={this.state.onDisplay} data={this.state.subgroups} />
       </div>
     );
 	}

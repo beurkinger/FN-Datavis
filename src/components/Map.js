@@ -9,7 +9,7 @@ import {geoMercator as d3geoMercator, geoPath as d3geoPath, max as d3max, json a
 import {cities, FACEBOOK_BLUE, TWITTER_BLUE} from '../constants';
 
 const SCALE_VALUE = 16;
-const cityDotRadius = 2;
+const CITY_DOT_RADIUS = 2;
 
 class Map extends Component {
 
@@ -24,13 +24,14 @@ class Map extends Component {
     this.projection = null;
     this.mapNode = null;
     this.dataNode = null;
-    this.twitterNode = null;
-    this.facebookNode = null;
-    this.cityNode = null;
 
-    this.props = {data : []};
+    this.props = {
+      data : [],
+      onDisplay : {facebook : true, twitter : true}
+    };
 
     this.displayData = this.displayData.bind(this);
+    this.parseData = this.parseData.bind(this);
   }
 
   componentDidMount () {
@@ -39,9 +40,6 @@ class Map extends Component {
     this.height = this.elt.node().getBoundingClientRect().height;
     this.mapNode = this.elt.append('g');
     this.dataNode = this.elt.append('g');
-    this.twitterNode = this.dataNode.append('g');
-    this.facebookNode = this.dataNode.append('g');
-    this.cityNode = this.dataNode.append('g');
 
     this.getMap(() => {
       this.displayData();
@@ -54,14 +52,11 @@ class Map extends Component {
 
   getMap (callback) {
     d3json("/build/data/departements2.json", (geoJSON) => {
-        this.projection = d3geoMercator()
-        .fitSize([this.width, this.height], geoJSON);
+        this.projection = d3geoMercator().fitSize([this.width, this.height], geoJSON);
 
         this.geopath.projection(this.projection);
 
-        this.mapNode.selectAll("path")
-          .data(geoJSON.features)
-            .enter()
+        this.mapNode.selectAll("path").data(geoJSON.features).enter()
           .append("path")
             .attr("d", this.geopath)
             .style("fill","#FFF")
@@ -76,52 +71,85 @@ class Map extends Component {
 
   displayData () {
     let self = this;
-
     if (!self.projection || !self.props.data) return;
+    console.log('display data');
+    let data = this.parseData(this.props.data);
+    console.log(data);
 
-    let max = d3max(self.props.data, (d) => d.facebook > d.twitter ? d.facebook : d.twitter);
+    self.dataNode.selectAll('g').remove();
 
     let scale = d3scaleLinear()
-        .domain([0, max])
+        .domain([0, data.max])
         .range([0, self.width / SCALE_VALUE]);
 
-    let twitterCircles = self.twitterNode.selectAll('circle').data(self.props.data);
-    twitterCircles.enter()
-        .append('circle')
-        .style('fill', TWITTER_BLUE)
-      .merge(twitterCircles).each(function (d, i) {
-          let xy = self.projection(cities[d.city]);
-          let scaledValue = scale(d.twitter);
-          d3select(this)
-            .attr('cx', xy[0])
-            .attr('cy', xy[1] - scaledValue)
-            .attr('r', scaledValue);
+    let groups = self.dataNode.selectAll('g')
+    .data(data.groups, d => d.name).enter()
+      .append('g').attr('id', d => d.name)
+    .each(function(d, i) {
+      let groupNode = d3select(this);
+      let xy = self.projection(cities[d.city]);
+
+      groupNode.append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', xy[1])
+        .attr('r', CITY_DOT_RADIUS)
+        .style('fill', '#000');
+
+      groupNode.selectAll('circle')
+      .data(d => d.socialData, e => e.type).enter()
+      .append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', e => xy[1] - scale(e.value))
+        .attr('r', e => scale(e.value))
+        .style('fill', e => e.color);
+    });
+
+    groups.exit().remove();
+  }
+
+  parseData (data) {
+    const pushSocialData = (array, type, color, value) => array.push({
+      type : type,
+      color : color,
+      value : value
+    });
+
+    let max = 0;
+
+    let groups = data.map((group) => {
+      let socialData = [];
+
+      if (group.twitter && this.props.onDisplay.twitter)
+        pushSocialData(socialData, 'twitter', TWITTER_BLUE, group.twitter);
+
+      if (group.facebook && this.props.onDisplay.facebook)
+        pushSocialData(socialData, 'facebook', FACEBOOK_BLUE, group.facebook);
+
+      socialData.sort(function(a, b) {
+        return b.value - a.value;
       });
 
-    let facebookCircles = self.facebookNode.selectAll('circle').data(self.props.data);
-    facebookCircles.enter()
-        .append('circle')
-        .style('fill', FACEBOOK_BLUE)
-      .merge(facebookCircles).each(function (d, i) {
-          let xy = self.projection(cities[d.city]);
-          let scaledValue = scale(d.facebook);
-          d3select(this)
-            .attr('cx', xy[0])
-            .attr('cy', xy[1] - scaledValue)
-            .attr('r', scaledValue);
-      });
+      let x = d3max(socialData, (d) => d.value);
+      max = x > max ? x : max;
 
-    let cityCircles = self.cityNode.selectAll('circle').data(self.props.data);
-    cityCircles.enter()
-        .append('circle')
-        .style('fill', '#000')
-        .attr('r', d => cityDotRadius)
-      .merge(cityCircles).each(function (d, i) {
-        let xy = self.projection(cities[d.city]);
-        d3select(this)
-          .attr('cx', xy[0])
-          .attr('cy', xy[1]);
-      });
+      return {
+        name : group.name,
+        city : group.city,
+        socialData : socialData
+      }
+    });
+
+    return {groups : groups, max : max};
+  }
+
+
+
+  appendBubble (node, x, y, r, color) {
+    node.append('circle')
+      .attr('cx', x)
+      .attr('cy', y)
+      .attr('r', r)
+      .style('fill', color);
   }
 
   render () {
