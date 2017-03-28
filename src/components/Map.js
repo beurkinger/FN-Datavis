@@ -6,7 +6,7 @@ import {geoMercator as d3geoMercator, geoPath as d3geoPath, max as d3max, json a
 // import {max as d3max} from 'd3-array';
 // import {scaleLinear as d3scaleLinear} from 'd3-scale';
 // import {select as d3select} from 'd3-selection';
-import {cities, FACEBOOK_BLUE, TWITTER_BLUE, FACEBOOK_KEY, TWITTER_KEY} from '../constants';
+import {cities, FACEBOOK_BLUE, TWITTER_BLUE} from '../constants';
 
 const SCALE_VALUE = 16;
 const CITY_DOT_RADIUS = 2;
@@ -31,7 +31,7 @@ class Map extends Component {
     };
 
     this.displayData = this.displayData.bind(this);
-    // this.parseData = this.parseData.bind(this);
+    this.parseData = this.parseData.bind(this);
   }
 
   componentDidMount () {
@@ -71,71 +71,86 @@ class Map extends Component {
 
   displayData () {
     let self = this;
-    if (!self.projection || !self.props.data.networks) return;
-    let data = self.props.data;
-    console.log(self.props.data);
-    // self.dataNode.selectAll('g').remove();
-    //
+    if (!self.projection || !self.props.data) return;
+    console.log('display data');
+    let data = this.parseData(this.props.data);
+    console.log(data);
+
+    self.dataNode.selectAll('g').remove();
+
     let scale = d3scaleLinear()
-        .domain([0, data.getMax()])
+        .domain([0, data.max])
         .range([0, self.width / SCALE_VALUE]);
 
-    let circles = self.dataNode.selectAll('circles').data(data.networks);
-    circles.enter()
-        .append('circle')
-      .merge(circles).each(function (d, i) {
-        let division = data.divisions[d.divisionId];
-        let city = cities[division.city];
-        let xy = self.projection(city);
-        let r = scale(d.value);
-        let color = d.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE;
-        d3select(this)
-          .attr('cx', xy[0])
-          .attr('cy', xy[1] - r)
-          .attr('r', r)
-          .style('fill', color);
-      });
-    circles.exit().remove();
+    let groups = self.dataNode.selectAll('g')
+    .data(data.groups, d => d.name).enter()
+      .append('g').attr('id', d => d.name)
+    .each(function(d, i) {
+      let groupNode = d3select(this);
+      let xy = self.projection(cities[d.city]);
 
-    // .each(function(d, i) {
-    //   let groupNode = d3select(this);
-    //   let xy = self.projection(cities[d.cit  y]);
-    //
-    // let groups = self.dataNode.selectAll('g')
-    // .data(data.groups, d => d.name).enter()
-    //   .append('g').attr('id', d => d.name)
-    // .each(function(d, i) {
-    //   let groupNode = d3select(this);
-    //   let xy = self.projection(cities[d.city]);
-    //
-    //   groupNode.append('circle')
-    //     .attr('cx', xy[0])
-    //     .attr('cy', xy[1])
-    //     .attr('r', CITY_DOT_RADIUS)
-    //     .style('fill', '#000');
-    //
-    //   groupNode.selectAll('circle')
-    //   .data(d => d.socialData, e => e.type).enter()
-    //   .append('circle')
-    //     .attr('cx', xy[0])
-    //     .attr('cy', e => xy[1] - scale(e.value))
-    //     .attr('r', e => scale(e.value))
-    //     .style('fill', e => e.color);
-    // });
-    //
-    // groups.exit().remove();
+      groupNode.append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', xy[1])
+        .attr('r', CITY_DOT_RADIUS)
+        .style('fill', '#000');
+
+      groupNode.selectAll('circle')
+      .data(d => d.socialData, e => e.type).enter()
+      .append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', e => xy[1] - scale(e.value))
+        .attr('r', e => scale(e.value))
+        .style('fill', e => e.color);
+    });
+
+    groups.exit().remove();
+  }
+
+  parseData (data) {
+    const pushSocialData = (array, type, color, value) => array.push({
+      type : type,
+      color : color,
+      value : value
+    });
+
+    let max = 0;
+
+    let groups = data.map((group) => {
+      let socialData = [];
+
+      if (group.twitter && this.props.onDisplay.twitter)
+        pushSocialData(socialData, 'twitter', TWITTER_BLUE, group.twitter);
+
+      if (group.facebook && this.props.onDisplay.facebook)
+        pushSocialData(socialData, 'facebook', FACEBOOK_BLUE, group.facebook);
+
+      socialData.sort(function(a, b) {
+        return b.value - a.value;
+      });
+
+      let x = d3max(socialData, (d) => d.value);
+      max = x > max ? x : max;
+
+      return {
+        name : group.name,
+        city : group.city,
+        socialData : socialData
+      }
+    });
+
+    return {groups : groups, max : max};
   }
 
 
 
-
-  // appendBubble (node, x, y, r, color) {
-  //   node.append('circle')
-  //     .attr('cx', x)
-  //     .attr('cy', y)
-  //     .attr('r', r)
-  //     .style('fill', color);
-  // }
+  appendBubble (node, x, y, r, color) {
+    node.append('circle')
+      .attr('cx', x)
+      .attr('cy', y)
+      .attr('r', r)
+      .style('fill', color);
+  }
 
   render () {
     return <svg id="fn-map"></svg>

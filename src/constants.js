@@ -1,6 +1,3 @@
-export const FACEBOOK_KEY = 'facebook';
-export const TWITTER_KEY = 'twitter';
-
 export const FACEBOOK_BLUE = '#0066CC';
 export const TWITTER_BLUE = '#0099FF';
 

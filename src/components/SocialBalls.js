@@ -1,5 +1,4 @@
 import Inferno from 'inferno';
-import {FACEBOOK_KEY, TWITTER_KEY} from '../constants';
 import Checkbox from './Checkbox';
 
 const SocialBalls = (props) => {
@@ -14,11 +13,11 @@ const SocialBalls = (props) => {
     <div id="fn-social-balls">
       <div className="social-ball">
         <img src="/build/img/facebook-ball.svg" />
-        <Checkbox checked={props.onDisplay.facebook} clickHandler={handleCheck} id={FACEBOOK_KEY} />
+        <Checkbox checked={props.onDisplay.facebook} clickHandler={handleCheck} id={'facebook'} />
       </div>
       <div className="social-ball">
         <img src="/build/img/twitter-ball.svg" />
-        <Checkbox checked={props.onDisplay.twitter} clickHandler={handleCheck} id={TWITTER_KEY} />
+        <Checkbox checked={props.onDisplay.twitter} clickHandler={handleCheck} id={'twitter'} />
       </div>
     </div>
   )
