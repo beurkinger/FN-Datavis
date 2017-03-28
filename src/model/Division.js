@@ -1,9 +1,9 @@
 class Division {
 
-  constructor(name, city, groupId) {
+  constructor(name, city, networks) {
     this.name = name;
-    this.groupId = groupId;
     this.city = city;
+    this.networks = networks;
   }
 }
 

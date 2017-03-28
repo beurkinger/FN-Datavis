@@ -27,11 +27,11 @@ class GroupInfosData extends Component {
     this.elt = d3select(document.getElementById('fn-group-sum'));
     this.width = this.elt.node().getBoundingClientRect().width;
     this.height = this.elt.node().getBoundingClientRect().height;
-    // this.displayData();
+    this.displayData();
   }
 
   componentDidUpdate () {
-    // this.displayData();
+    this.displayData();
   }
 
   displayData () {
@@ -54,7 +54,8 @@ class GroupInfosData extends Component {
     .merge(circles)
         .attr('cy', d => this.height - scale(d.sum))
         .attr('r', d => scale(d.sum))
-        .style('fill', d => d.name === TWITTER_KEY ? TWITTER_BLUE : FACEBOOK_BLUE);
+        .style('fill', d => d.name === TWITTER_KEY ? TWITTER_BLUE : FACEBOOK_BLUE)
+    .exit().remove();
   }
 
   render () {

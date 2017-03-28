@@ -1,18 +1,19 @@
 import Inferno from 'inferno';
 
-const GroupList = (props) => (
+const GroupList = (props) => {
+  const getLi = function(group) {
+    return (
+      <li className={group.id === props.groupId ? 'selected' : ''}
+          onClick={e => props.clickHandler(group.id)} >
+        {group.name}
+      </li>
+    )
+  }
+  return (
   <ul id="fn-group-list">
-    <li className="selected">FN Jeunesse</li>
-    <li>Génération Identitaire</li>
-    <li>Collectif Marianne</li>
-    <li>FN Sciences Po</li>
-    <li>Collectif Audace</li>
-    <li>Cocarde Étudiante</li>
-    <li>Dissidence Française</li>
-    <li>Jeune SIEL</li>
-    <li>Civitas Jeunesse</li>
-    <li>Groupe Union Défense</li>
+    {props.list.map(getLi)}
   </ul>
-);
+  )
+};
 
 module.exports = GroupList;

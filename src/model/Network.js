@@ -1,10 +1,8 @@
 class Network {
 
-  constructor(type, value, groupId, divisionId) {
+  constructor(type, value) {
     this.type = type;
     this.value = value;
-    this.groupId = groupId;
-    this.divisionId = divisionId;
   }
 }
 

@@ -22,12 +22,11 @@ class Main extends Component {
     this.state = {
       name : "",
       data : new Data(),
-      groupdId : 0,
       onDisplay : onDisplay
     };
 
-    this.getGroup = this.getGroup.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
+    this.handleListClick = this.handleListClick.bind(this);
 	}
 
   componentWillMount () {
@@ -36,7 +35,8 @@ class Main extends Component {
         let data = new Data();
         data.parseData(json);
         this.setState({
-        data : data
+        data : data,
+        groupId : 0
         // name : json.name,
         // sumTwitter : json.sumTwitter,
         // sumFacebook : json.sumFacebook,
@@ -46,15 +46,13 @@ class Main extends Component {
     });
   }
 
-  getGroup () {
-    let groups = this.state.data.groups;
-    let groupId = this.state.groupId;
-    if (typeof groups[groupId] !== 'undefined' ) return groups[groupId];
-    return {};
-  }
-
   handleCheck (onDisplay) {
     this.setState({onDisplay : onDisplay});
+  }
+
+  handleListClick (groupId) {
+    console.log(groupId);
+    this.setState({groupId : groupId});
   }
 
 	render () {
@@ -67,10 +65,10 @@ class Main extends Component {
         <h2 id="fn-subtitle">
           Abonnés Twitter et Facebook 2017 des antennes régionales
         </h2>
-        <GroupInfos group={this.getGroup()} />
+        <GroupInfos group={this.state.data.getGroup(this.state.groupId)} />
         <SocialBalls onDisplay={this.state.onDisplay} checkHandler={this.handleCheck} />
-        <GroupList />
-        <Map onDisplay={this.state.onDisplay} data={this.state.data} />
+        <GroupList list={this.state.data.getGroupsList()} groupId={this.state.groupId} clickHandler={this.handleListClick} />
+        <Map onDisplay={this.state.onDisplay} data={this.state.data} groupId={this.state.groupId} />
       </div>
     );
 	}

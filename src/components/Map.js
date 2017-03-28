@@ -27,6 +27,7 @@ class Map extends Component {
 
     this.props = {
       data : [],
+      groupId : 0,
       onDisplay : {facebook : true, twitter : true}
     };
 
@@ -71,71 +72,48 @@ class Map extends Component {
 
   displayData () {
     let self = this;
-    if (!self.projection || !self.props.data.networks) return;
-    let data = self.props.data;
-    console.log(self.props.data);
-    // self.dataNode.selectAll('g').remove();
-    //
+    if (!self.projection || !self.props.data.isFull()) return;
+
+    let divisions = self.props.data.getGroup(self.props.groupId).divisions;
+
     let scale = d3scaleLinear()
-        .domain([0, data.getMax()])
+        .domain([0, self.props.data.getMax()])
         .range([0, self.width / SCALE_VALUE]);
 
-    let circles = self.dataNode.selectAll('circles').data(data.networks);
-    circles.enter()
-        .append('circle')
-      .merge(circles).each(function (d, i) {
-        let division = data.divisions[d.divisionId];
-        let city = cities[division.city];
-        let xy = self.projection(city);
-        let r = scale(d.value);
-        let color = d.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE;
-        d3select(this)
-          .attr('cx', xy[0])
-          .attr('cy', xy[1] - r)
-          .attr('r', r)
-          .style('fill', color);
-      });
-    circles.exit().remove();
+    self.dataNode.selectAll('g').remove();
 
-    // .each(function(d, i) {
-    //   let groupNode = d3select(this);
-    //   let xy = self.projection(cities[d.cit  y]);
-    //
-    // let groups = self.dataNode.selectAll('g')
-    // .data(data.groups, d => d.name).enter()
-    //   .append('g').attr('id', d => d.name)
-    // .each(function(d, i) {
-    //   let groupNode = d3select(this);
-    //   let xy = self.projection(cities[d.city]);
-    //
-    //   groupNode.append('circle')
-    //     .attr('cx', xy[0])
-    //     .attr('cy', xy[1])
-    //     .attr('r', CITY_DOT_RADIUS)
-    //     .style('fill', '#000');
-    //
-    //   groupNode.selectAll('circle')
-    //   .data(d => d.socialData, e => e.type).enter()
-    //   .append('circle')
-    //     .attr('cx', xy[0])
-    //     .attr('cy', e => xy[1] - scale(e.value))
-    //     .attr('r', e => scale(e.value))
-    //     .style('fill', e => e.color);
-    // });
-    //
-    // groups.exit().remove();
+    let g = self.dataNode.selectAll('g').data(divisions);
+    g.enter().append('g').attr('id', d => d.name).each(function(d, i) {
+      let groupNode = d3select(this);
+      let networks = self.filterNetworks(d.networks);
+      let xy = self.projection(cities[d.city]);
+
+      groupNode.append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', xy[1])
+        .attr('r', CITY_DOT_RADIUS)
+        .style('fill', '#000');
+
+      let circles = groupNode.selectAll('circle').data(networks, e => e.type);
+
+      circles.enter()
+      .append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', e => xy[1] - scale(e.value))
+        .attr('r', e => scale(e.value))
+        .style('fill', e => e.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE);
+    });
   }
 
-
-
-
-  // appendBubble (node, x, y, r, color) {
-  //   node.append('circle')
-  //     .attr('cx', x)
-  //     .attr('cy', y)
-  //     .attr('r', r)
-  //     .style('fill', color);
-  // }
+  filterNetworks(networks) {
+    if (!this.props.onDisplay[FACEBOOK_KEY]) {
+      networks = networks.filter((n) => n.type !== FACEBOOK_KEY);
+    }
+    if (!this.props.onDisplay[TWITTER_KEY]) {
+      networks = networks.filter((n) => n.type !== TWITTER_KEY);
+    }
+    return networks;
+  }
 
   render () {
     return <svg id="fn-map"></svg>

@@ -7,32 +7,51 @@ class Data {
 
   constructor() {
     this.groups = [];
-    this.divisions = [];
-    this.networks = [];
     this.max = 0;
+    this.full = false;
   }
 
   parseData (data) {
+    let max = 0;
     data.forEach((group) => {
-      let groupId = this.groups.length;
+      let divisions = [];
       let sumTwitter = 0;
       let sumFacebook = 0;
       group.divisions.forEach((division) => {
-        let divisionId = this.divisions.length;
+        let networks = [];
         sumFacebook += division.facebook;
         sumTwitter += division.twitter;
-        this.networks.push(new Network(FACEBOOK_KEY, division.facebook, groupId, divisionId));
-        this.networks.push(new Network(TWITTER_KEY, division.twitter, groupId, divisionId));
-        this.divisions.push(new Division(division.name, division.city, groupId));
+        networks.push(new Network(FACEBOOK_KEY, division.facebook));
+        networks.push(new Network(TWITTER_KEY, division.twitter));
+        networks.sort((a, b) => b.value - a.value);
+        let x = division.facebook > division.twitter ? division.facebook : division.twitter;
+        max = x > max ? x : max;
+        divisions.push(new Division(division.name, division.city, networks));
       });
-      this.groups.push(new Group(group.name, sumFacebook, sumTwitter));
+      this.groups.push(new Group(group.name, sumFacebook, sumTwitter, divisions));
+      this.max = max;
     });
-    this.networks.sort((a, b) => b.value - a.value);
-    this.max = this.networks[0].value;
+    this.full = true;
   }
-  
+
+  getGroup (id) {
+    let groups = this.groups;
+    if (typeof groups[id] !== 'undefined' ) return groups[id];
+    return {};
+  }
+
+  getGroupsList () {
+    return this.groups.map((group, i) => {
+      return { id : i, name : group.name }
+    })
+  }
+
   getMax() {
     return this.max;
+  }
+
+  isFull() {
+    return this.full;
   }
 }
 
