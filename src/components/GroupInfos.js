@@ -4,17 +4,12 @@ import {max as d3max, scaleLinear as d3scaleLinear, select as d3select} from 'd3
 import {cities, FACEBOOK_BLUE, TWITTER_BLUE} from '../constants';
 import GroupInfosData from './GroupInfosData';
 
-const defaultProps = {
-  name : "",
-  sumTwitter : 0,
-  sumFacebook : 0
-};
-
-const GroupInfos = (props = defaultProps) => (
+const GroupInfos = (props) => {
+  return (
   <div id="fn-group-infos">
-    <GroupInfosData sumTwitter={props.sumTwitter} sumFacebook={props.sumFacebook} />
-    <h3 id="fn-group-name">{props.name}</h3>
+    <GroupInfosData sumTwitter={props.group.sumTwitter} sumFacebook={props.group.sumFacebook} />
+    <h3 id="fn-group-name">{props.group.name}</h3>
   </div>
-);
+)};
 
 module.exports = GroupInfos;

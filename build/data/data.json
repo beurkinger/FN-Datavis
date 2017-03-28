@@ -1,25 +1,52 @@
-{
-  "name" : "Groupe Union Défense",
-  "sumTwitter" : 1519,
-  "sumFacebook" : 1106,
-  "subgroups" : [
-    {
-      "name" : "GUD Paris",
-      "twitter" : 1017,
-      "facebook" : 674,
-      "city" : "lille"
-    },
-    {
-      "name" : "GUD Creteil",
-      "twitter" : 178,
-      "facebook" : 108,
-      "city" : "creteil"
-    },
-    {
-      "name" : "GUD Toulouse",
-      "twitter" : 324,
-      "facebook" : 118,
-      "city" : "toulouse"
-    }
-  ]
-}
+[
+  {
+    "name" : "Groupe Union Défense",
+    "sumTwitter" : 1519,
+    "sumFacebook" : 1106,
+    "divisions" : [
+      {
+        "name" : "GUD Paris",
+        "twitter" : 1017,
+        "facebook" : 674,
+        "city" : "lille"
+      },
+      {
+        "name" : "GUD Creteil",
+        "twitter" : 178,
+        "facebook" : 108,
+        "city" : "creteil"
+      },
+      {
+        "name" : "GUD Toulouse",
+        "twitter" : 324,
+        "facebook" : 118,
+        "city" : "toulouse"
+      }
+    ]
+  },
+  {
+    "name" : "Collectif Marine",
+    "sumTwitter" : 2019,
+    "sumFacebook" : 807,
+    "divisions" : [
+      {
+        "name" : "Collectif Marine Paris",
+        "twitter" : 517,
+        "facebook" : 134,
+        "city" : "paris"
+      },
+      {
+        "name" : "Collectif Marine Dijon",
+        "twitter" : 308,
+        "facebook" : 88,
+        "city" : "dijon"
+      },
+      {
+        "name" : "Collectif Marine Nice",
+        "twitter" : 500,
+        "facebook" : 200,
+        "city" : "nice"
+      }
+    ]
+  }
+]
