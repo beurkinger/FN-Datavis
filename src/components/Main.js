@@ -1,10 +1,12 @@
 import Inferno, { linkEvent } from 'inferno';
+import {FACEBOOK_KEY, TWITTER_KEY} from '../constants';
 import Component from 'inferno-component';
 import {json as d3json} from 'd3';
 import GroupInfos from './GroupInfos';
 import GroupList from './GroupList';
 import SocialBalls from './SocialBalls';
 import Map from './Map';
+import Data from '../model/Data';
 
 
 class Main extends Component {
@@ -13,26 +15,42 @@ class Main extends Component {
 
 		super(props);
 
+    let onDisplay = {};
+    onDisplay[TWITTER_KEY] = true;
+    onDisplay[FACEBOOK_KEY] = true;
+
     this.state = {
       name : "",
-      sumTwitter : 0,
-      sumFacebook : 0,
-      subgroups : [],
-      onDisplay : { facebook : true, twitter : true }
+      data : new Data(),
+      groupdId : 0,
+      onDisplay : onDisplay
     };
 
+    this.getGroup = this.getGroup.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
 	}
 
   componentWillMount () {
     d3json("/build/data/data.json", (json) => {
-      if (json) this.setState({
-        name : json.name,
-        sumTwitter : json.sumTwitter,
-        sumFacebook : json.sumFacebook,
-        subgroups : json.subgroups
-      });
+      if (json) {
+        let data = new Data();
+        data.parseData(json);
+        this.setState({
+        data : data
+        // name : json.name,
+        // sumTwitter : json.sumTwitter,
+        // sumFacebook : json.sumFacebook,
+        // subgroups : json.subgroups
+        });
+      }
     });
+  }
+
+  getGroup () {
+    let groups = this.state.data.groups;
+    let groupId = this.state.groupId;
+    if (typeof groups[groupId] !== 'undefined' ) return groups[groupId];
+    return {};
   }
 
   handleCheck (onDisplay) {
@@ -49,10 +67,10 @@ class Main extends Component {
         <h2 id="fn-subtitle">
           Abonnés Twitter et Facebook 2017 des antennes régionales
         </h2>
-        <GroupInfos name={this.state.name} sumTwitter={this.state.sumTwitter} sumFacebook={this.state.sumFacebook} />
+        <GroupInfos group={this.getGroup()} />
         <SocialBalls onDisplay={this.state.onDisplay} checkHandler={this.handleCheck} />
         <GroupList />
-        <Map onDisplay={this.state.onDisplay} data={this.state.subgroups} />
+        <Map onDisplay={this.state.onDisplay} data={this.state.data} />
       </div>
     );
 	}
