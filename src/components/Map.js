@@ -72,30 +72,39 @@ class Map extends Component {
   displayData () {
     let self = this;
     if (!self.projection || !self.props.data) return;
-
-    let max = d3max(self.props.data, (d) => d.facebook > d.twitter ? d.facebook : d.twitter);
+    console.log('display data');
+    let data = this.parseData(this.props.data);
+    console.log(data);
 
     self.dataNode.selectAll('g').remove();
 
     let scale = d3scaleLinear()
-        .domain([0, max])
+        .domain([0, data.max])
         .range([0, self.width / SCALE_VALUE]);
 
     let groups = self.dataNode.selectAll('g')
-    .data(self.props.data, d => d.name).enter()
-      .append('g').each(function (d, i) {
-        let node = d3select(this);
-        let scaledTwitter = scale(d.twitter);
-        let scaledFacebook = scale(d.facebook);
+    .data(data.groups, d => d.name).enter()
+      .append('g').attr('id', d => d.name)
+    .each(function(d, i) {
+      let groupNode = d3select(this);
+      let xy = self.projection(cities[d.city]);
 
-        let xy = self.projection(cities[d.city]);
-        let x = xy[0];
-        let y = xy[1];
+      groupNode.append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', xy[1])
+        .attr('r', CITY_DOT_RADIUS)
+        .style('fill', '#000');
 
-        self.appendBubble(node, x, y, CITY_DOT_RADIUS, '#000');
-        self.appendBubble(node, x, y - scaledTwitter, scaledTwitter, TWITTER_BLUE);
-        self.appendBubble(node, x, y - scaledFacebook, scaledFacebook, FACEBOOK_BLUE);
-      });
+      groupNode.selectAll('circle')
+      .data(d => d.socialData, e => e.type).enter()
+      .append('circle')
+        .attr('cx', xy[0])
+        .attr('cy', e => xy[1] - scale(e.value))
+        .attr('r', e => scale(e.value))
+        .style('fill', e => e.color);
+    });
+
+    groups.exit().remove();
   }
 
   parseData (data) {
