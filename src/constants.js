@@ -4,7 +4,9 @@ export const TWITTER_KEY = 'twitter';
 export const FACEBOOK_BLUE = '#0066CC';
 export const TWITTER_BLUE = '#0099FF';
 
-export const cities = {
+export const BUBBLES_TRANSITION_DELAY = 1000;
+
+export const CITIES = {
   ajaccio : [8.738634999999931, 41.919229],
   albi : [2.148641, 43.925085],
   amiens : [2.295753, 49.894067],

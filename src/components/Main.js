@@ -3,7 +3,7 @@ import {FACEBOOK_KEY, TWITTER_KEY} from '../constants';
 import Component from 'inferno-component';
 import {json as d3json} from 'd3';
 import GroupInfos from './GroupInfos';
-import GroupList from './GroupList';
+import GroupSelect from './GroupSelect';
 import SocialBalls from './SocialBalls';
 import Map from './Map';
 import Data from '../model/Data';
@@ -37,10 +37,6 @@ class Main extends Component {
         this.setState({
         data : data,
         groupId : 0
-        // name : json.name,
-        // sumTwitter : json.sumTwitter,
-        // sumFacebook : json.sumFacebook,
-        // subgroups : json.subgroups
         });
       }
     });
@@ -51,7 +47,6 @@ class Main extends Component {
   }
 
   handleListClick (groupId) {
-    console.log(groupId);
     this.setState({groupId : groupId});
   }
 
@@ -67,7 +62,7 @@ class Main extends Component {
         </h2>
         <GroupInfos group={this.state.data.getGroup(this.state.groupId)} />
         <SocialBalls onDisplay={this.state.onDisplay} checkHandler={this.handleCheck} />
-        <GroupList list={this.state.data.getGroupsList()} groupId={this.state.groupId} clickHandler={this.handleListClick} />
+        <GroupSelect list={this.state.data.getGroupsList()} groupId={this.state.groupId} clickHandler={this.handleListClick} />
         <Map onDisplay={this.state.onDisplay} data={this.state.data} groupId={this.state.groupId} />
       </div>
     );
