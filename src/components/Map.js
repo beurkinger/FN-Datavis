@@ -1,16 +1,12 @@
 import Inferno, { linkEvent } from 'inferno';
 import Component from 'inferno-component';
 import {easeLinear as d3easeLinear, geoMercator as d3geoMercator, geoPath as d3geoPath, max as d3max, json as d3json, scaleLinear as d3scaleLinear, select as d3select, transition as d3transition} from 'd3';
-// import {json as d3json} from 'd3';
-// import {geoMercator as d3geoMercator, geoPath as d3geoPath} from 'd3-geo';
-// import {max as d3max} from 'd3-array';
-// import {scaleLinear as d3scaleLinear} from 'd3-scale';
-// import {select as d3select} from 'd3-selection';
 import {BUBBLES_TRANSITION_DELAY, CITIES, FACEBOOK_BLUE, TWITTER_BLUE, FACEBOOK_KEY, TWITTER_KEY} from '../constants';
 
 const SCALE_VALUE = 16;
 const CITY_DOT_RADIUS = 2;
-const BUBBLES_DEFAULT_OPACITY = 0.7;
+const CITY_DOT_COLOR = '#000';
+const BUBBLES_DEFAULT_OPACITY = 0.85;
 
 class Map extends Component {
 
@@ -23,6 +19,7 @@ class Map extends Component {
     this.width = null;
     this.height = null;
     this.projection = null;
+    this.scale = null;
     this.mapNode = null;
     this.dataNode = null;
 
@@ -77,7 +74,7 @@ class Map extends Component {
 
     let divisions = self.props.data.getGroup(self.props.groupId).divisions;
 
-    const scale = d3scaleLinear()
+    this.scale = d3scaleLinear()
         .domain([0, self.props.data.getMax()])
         .range([0, self.width / SCALE_VALUE]);
 
@@ -92,43 +89,59 @@ class Map extends Component {
     .attr('id', d => d.name)
     .style('opacity', BUBBLES_DEFAULT_OPACITY)
     .on("mouseover", function(d) {
-      d3select(this).style('opacity', 1);
+      self.onMouseOver(d3select(this), d);
     })
     .on("mouseout", function(d) {
-      d3select(this).style('opacity', BUBBLES_DEFAULT_OPACITY);
+      self.onMouseOut(d3select(this));
     })
     .each(function(d, i) {
       let groupNode = d3select(this);
       let networks = self.filterNetworks(d.networks);
       let xy = self.projection(CITIES[d.city]);
 
-      groupNode.append('circle')
-        .attr('cx', xy[0])
-        .attr('cy', xy[1])
-        .attr('r', CITY_DOT_RADIUS)
-        .style('fill', '#000');
-
-      let circles = groupNode.selectAll('circle').data(networks, e => e.type);
-
-      circles.enter()
-      .append('circle')
-        .attr('cx', xy[0])
-        .attr('cy', e => xy[1])
-        .style('fill', e => e.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE)
-        .transition()
-        .attr('cy', e => xy[1] - scale(e.value))
-        .attr('r', e => scale(e.value));
-    });
+      self.appendCityDot(groupNode, xy);
+      self.appendNetworkCircles(groupNode, xy, d.networks);
+    })
   }
 
-  filterNetworks(networks) {
+  filterNetworks(networksData) {
     if (!this.props.onDisplay[FACEBOOK_KEY]) {
-      networks = networks.filter((n) => n.type !== FACEBOOK_KEY);
+      networksData = networksData.filter((n) => n.type !== FACEBOOK_KEY);
     }
     if (!this.props.onDisplay[TWITTER_KEY]) {
-      networks = networks.filter((n) => n.type !== TWITTER_KEY);
+      networksData = networksData.filter((n) => n.type !== TWITTER_KEY);
     }
-    return networks;
+    return networksData;
+  }
+
+  appendCityDot(node, xy) {
+    node.append('circle')
+      .attr('cx', xy[0])
+      .attr('cy', xy[1])
+      .attr('r', CITY_DOT_RADIUS)
+      .style('fill', CITY_DOT_COLOR);
+  }
+
+  appendNetworkCircles (node, xy, data) {
+    let circles = node.selectAll('circle').data(data, d => d.type);
+
+    circles.enter()
+    .append('circle')
+      .attr('cx', xy[0])
+      .attr('cy', d => xy[1])
+      .style('fill', d => d.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE)
+      .transition()
+      .attr('cy', d => xy[1] - this.scale(d.value))
+      .attr('r', d => this.scale(d.value));
+  }
+
+  onMouseOver (group, networksData) {
+    group.style('opacity', 1);
+    console.log(networksData);
+  }
+
+  onMouseOut (group) {
+    group.style('opacity', BUBBLES_DEFAULT_OPACITY);
   }
 
   render () {
