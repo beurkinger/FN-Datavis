@@ -6,7 +6,7 @@ import {BUBBLES_TRANSITION_DELAY, CITIES, FACEBOOK_BLUE, TWITTER_BLUE, FACEBOOK_
 const SCALE_VALUE = 16;
 const CITY_DOT_RADIUS = 2;
 const CITY_DOT_COLOR = '#000';
-const BUBBLES_DEFAULT_OPACITY = 0.85;
+const BUBBLES_DEFAULT_OPACITY = 0.6;
 
 class Map extends Component {
 
@@ -100,7 +100,7 @@ class Map extends Component {
       let xy = self.projection(CITIES[d.city]);
 
       self.appendCityDot(groupNode, xy);
-      self.appendNetworkCircles(groupNode, xy, d.networks);
+      self.appendNetworkCircles(groupNode, xy, networks);
     })
   }
 
