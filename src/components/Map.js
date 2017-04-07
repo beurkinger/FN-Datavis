@@ -14,14 +14,18 @@ class Map extends Component {
 
 		super(props);
 
+    this.refDiv = null;
+    this.refSvg = null;
     this.geopath = d3geoPath();
-    this.elt = null;
+    this.divElt = null;
+    this.svgElt = null;
     this.width = null;
     this.height = null;
     this.projection = null;
     this.scale = null;
     this.mapNode = null;
-    this.dataNode = null;
+    this.bubblesNode = null;
+    this.detailsNode = null;
 
     this.props = {
       data : [],
@@ -34,11 +38,13 @@ class Map extends Component {
   }
 
   componentDidMount () {
-    this.elt = d3select(document.getElementById('fn-map'));
-    this.width = this.elt.node().getBoundingClientRect().width;
-    this.height = this.elt.node().getBoundingClientRect().height;
-    this.mapNode = this.elt.append('g');
-    this.dataNode = this.elt.append('g');
+    this.divElt = d3select(this.refDiv);
+    this.svgElt = d3select(this.refSvg);
+    this.width = this.svgElt.node().getBoundingClientRect().width;
+    this.height = this.svgElt.node().getBoundingClientRect().height;
+    this.mapNode = this.svgElt.append('g');
+    this.bubblesNode = this.svgElt.append('g');
+    this.detailsNode = this.svgElt.append('g');
 
     this.getMap(() => {
       this.displayData();
@@ -82,9 +88,9 @@ class Map extends Component {
       .duration(BUBBLES_TRANSITION_DELAY)
       .ease(d3easeLinear);
 
-    self.dataNode.selectAll('g').remove();
+    self.bubblesNode.selectAll('g').remove();
 
-    let g = self.dataNode.selectAll('g').data(divisions);
+    let g = self.bubblesNode.selectAll('g').data(divisions);
     g.enter().append('g')
     .attr('id', d => d.name)
     .style('opacity', BUBBLES_DEFAULT_OPACITY)
@@ -128,24 +134,78 @@ class Map extends Component {
     circles.enter()
     .append('circle')
       .attr('cx', xy[0])
-      .attr('cy', d => xy[1])
+      .attr('cy', xy[1])
       .style('fill', d => d.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE)
       .transition()
       .attr('cy', d => xy[1] - this.scale(d.value))
       .attr('r', d => this.scale(d.value));
   }
 
-  onMouseOver (group, networksData) {
+  onMouseOver (group, divisionData) {
+    let svgGroupWidth = group.node().getBBox().width;
     group.style('opacity', 1);
-    console.log(networksData);
+    // let xy = this.projection(CITIES[divisionData.city]);
+    // this.appendDetailsText(this.detailsNode, xy, divisionData.name);
+    // let networks = this.filterNetworks(divisionData.networks);
+    this.showTooltip(divisionData, svgGroupWidth);
   }
 
   onMouseOut (group) {
     group.style('opacity', BUBBLES_DEFAULT_OPACITY);
+    this.hideDetails();
+  }
+
+  appendDetailsText(node, xy, divisionName) {
+    node.append('text')
+      .text(divisionName)
+      .attr('x', xy[0])
+      .attr('y', xy[1] + 18)
+      .attr('text-anchor', 'middle')
+      .attr("font-family", "Helvetica, sans-serif")
+      .attr("font-size", "14px")
+      .attr("fill", "#000");
+  }
+
+  showTooltip (divisionData, svgGroupWidth) {
+    let xy = this.projection(CITIES[divisionData.city]);
+    let networks = this.filterNetworks(divisionData.networks);
+    let box = this.divElt.append('div')
+      .attr('id', 'fn-map-tooltip');
+    box.append('div')
+      .attr('class', 'name')
+      .text(divisionData.name);
+    box.selectAll('.network').data(networks).enter()
+    .append('div')
+      .attr('class', 'network')
+      .each(function(d, i) {
+        let networkDiv = d3select(this);
+        let img = d.type === FACEBOOK_KEY ? 'facebook-ball-white.svg' : 'twitter-ball-white.svg';
+        networkDiv.append('img')
+          .attr('src', 'build/img/' + img);
+        networkDiv.append('span')
+          .text(d.value)
+          .style('color', d.type === FACEBOOK_KEY ? FACEBOOK_BLUE : TWITTER_BLUE);
+      });
+    let boxWidth = box.node().getBoundingClientRect().width;
+    box.style('left', xy[0] - boxWidth / 2 + 'px')
+    .style('top', xy[1] + 10 + 'px');
+
+
+
+
+  }
+
+  hideDetails () {
+    // this.detailsNode.selectAll('text').remove();
+    this.divElt.selectAll('#fn-map-tooltip').remove();
   }
 
   render () {
-    return <svg id="fn-map"></svg>
+    return (
+      <div id="fn-map-container" ref={e => this.refDiv = e}>
+        <svg id="fn-map" ref={e => this.refSvg = e}></svg>
+      </div>
+    )
   }
 }
 
